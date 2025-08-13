@@ -16,6 +16,7 @@ import json
 import sys
 
 # Query for Open Neuro API
+# Might be able to change to get all info from this query instead of using selenium
 query =  """
 query {
   dataset(id:"ds_placeholder") {
@@ -122,7 +123,7 @@ def scrapeON(url):
 		driver.quit()
 	return metavars
 
-def gather_meta(ds,api_key):
+def gather_meta(ds,api_key,wd):
 
 	ondf = {
 		'OpenNeuro Code':[],
@@ -251,9 +252,10 @@ def main():
 	config = configparser.SafeConfigParser()
 	config.read([r'{wd}/conf/queries.ini'])
 	api_key = config.get('openneuro','api_key')
+	wd = config.get('openneuro','workingdir')
 	results = []
 	for ds in ds_list:
-		results.append(gather_meta(ds,api_key))
+		results.append(gather_meta(ds,api_key,wd))
 	return results
 
 if __name__=="__main__":
