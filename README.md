@@ -1,6 +1,6 @@
 List of open-sourced datasets as of 7/31/2025 and referenced in the paper: [Paper title](https://www.google.com)
 
-| <div style="width:100px">Dataset</div> | <div style="width:80px">Published Year</div> | <div style="width:80px">Age Range</div> | <div style="width:80px">Sample Size</div> | Modality | <div style="width:80px">Data Link</div> |
+| <div style="width:80px">Dataset</div> | <div style="width:80px">Published Year</div> | <div style="width:80px">Age Range</div> | <div style="width:80px">Sample Size</div> | Modality | <div style="width:80px">Data Link</div> |
 | :-: | :-: | :-: | :-: | :-: | :- |
 | Human Connectome Project (HCP): Harvard/MGH-UCLA Project, WU-Minn Project | 2013 | 22-35 | 1200 | MRI, fMRI, DTI | https://www.humanconnectome.org/ |
 | UK Biobank | 2015 | 44-82 | 41,520 | MRI, DTI, fMRI | https://www.ukbiobank.ac.uk/use-our-data/apply-for-access/ |
