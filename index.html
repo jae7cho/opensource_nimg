@@ -8,10 +8,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        th { cursor: pointer; user-select: none; }
+        th { cursor: pointer; user-select: none; transition: color 0.2s; }
         th:hover { color: #2563eb !important; }
-        /* Style for the scrollbar to keep it clean */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 8px; height: 10px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -44,27 +43,27 @@
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[1500px]">
+                <table class="w-full text-left border-collapse min-w-[1400px]">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
                             <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap">Year ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Age Range</th>
-                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Samples ↕</th>
+                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap min-w-[140px]">Published Year ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap min-w-[130px]">Age Range</th>
+                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap min-w-[130px]">Samples ↕</th>
                             <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Modality</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Type</th>
+                            <th onclick="sortData('Type')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Type ↕</th>
                             <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Link</th>
                             <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Reference</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100">
+                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
                         </tbody>
                 </table>
             </div>
         </div>
 
-        <footer class="mt-12 py-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-            <p>Interactive Index.</p>
+        <footer class="mt-12 py-8 border-t border-slate-200 text-center text-slate-400 text-xs tracking-wide">
+            <p>INTERACTIVE INDEX COMPANION</p>
         </footer>
     </div>
 
@@ -73,28 +72,24 @@
         let currentFilteredData = [];
         let sortDirection = 1;
 
-        // 1. Load the data
         async function loadData() {
             try {
-                // Ensure this filename matches your GitHub file exactly!
                 const response = await fetch('OpenSourceNeuroimagingDatasets.json');
                 datasets = await response.json();
                 currentFilteredData = datasets;
                 renderTable(datasets);
             } catch (err) {
                 console.error("Error loading JSON:", err);
-                document.getElementById('count').innerText = "Database connection error.";
+                document.getElementById('count').innerText = "Connection error.";
             }
         }
 
-        // 2. Sort the data
         function sortData(key) {
             sortDirection *= -1;
             const sorted = [...currentFilteredData].sort((a, b) => {
                 let valA = a[key] || '';
                 let valB = b[key] || '';
                 
-                // Numeric cleanup for sorting (years and samples with commas)
                 if (key === 'Samples' || key === 'Published year') {
                     valA = parseInt(String(valA).replace(/,/g, '')) || 0;
                     valB = parseInt(String(valB).replace(/,/g, '')) || 0;
@@ -107,61 +102,67 @@
             renderTable(sorted);
         }
 
-        // 3. Render the table
         function renderTable(data) {
             currentFilteredData = data;
             const body = document.getElementById('tableBody');
             const countDiv = document.getElementById('count');
             
-            countDiv.innerText = `Displaying ${data.length} Datasets Found`;
+            countDiv.innerText = `Displaying ${data.length} Datasets`;
 
             if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="7" class="p-10 text-center text-slate-400">No datasets found matching your search criteria.</td></tr>';
+                body.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-slate-400">No matches found.</td></tr>';
                 return;
             }
 
-            body.innerHTML = data.map(d => `
-                <tr class="hover:bg-blue-50/30 transition-colors group">
-                    <td class="p-5 font-bold text-blue-800">${d.Dataset || ''}</td>
-                    <td class="p-5 text-slate-500 text-center">${d['Published year'] || ''}</td>
-                    <td class="p-5 text-sm font-medium text-slate-600">${d['Age range'] || ''}</td>
-                    <td class="p-5 text-slate-800 font-semibold">${d.Samples || ''}</td>
+            body.innerHTML = data.map(d => {
+                // Point 2: Ensure year is an integer
+                const rawYear = parseFloat(d['Published year']);
+                const displayYear = !isNaN(rawYear) ? Math.floor(rawYear) : (d['Published year'] || '');
+
+                return `
+                <tr class="hover:bg-blue-50/40 transition-colors group">
+                    <td class="p-5 font-bold text-blue-900">${d.Dataset || ''}</td>
+                    <td class="p-5 text-slate-500 text-center font-medium">${displayYear}</td>
+                    <td class="p-5 text-slate-600 font-medium whitespace-nowrap">${d['Age range'] || ''}</td>
+                    <td class="p-5 text-slate-800 font-bold">${d.Samples || ''}</td>
                     <td class="p-5">
-                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase tracking-tighter rounded font-bold shadow-sm">
+                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase rounded font-bold shadow-sm whitespace-nowrap italic">
                             ${d.Modality || ''}
                         </span>
                     </td>
-                    <td class="p-5 text-slate-800 font-semibold">${d.Type || ''}</td>
+                    <td class="p-5 font-medium text-slate-700">${d.Type || ''}</td>
                     <td class="p-5">
-                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-4 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-800 transition-all font-bold shadow-sm">
+                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-[11px] rounded-lg hover:bg-blue-800 transition-all font-bold shadow-sm whitespace-nowrap tracking-tight">
                             Data Link ↗
                         </a>
                     </td>
-                    <td class="p-5 text-[11px] leading-relaxed italic text-slate-400 max-w-xs truncate group-hover:whitespace-normal group-hover:text-slate-600 transition-all" title="${d.Reference || ''}">
+                    <td class="p-5 text-[11px] italic text-slate-400 max-w-xs truncate group-hover:whitespace-normal group-hover:text-slate-600 transition-all cursor-help" title="${d.Reference || ''}">
                         ${d.Reference || ''}
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
-        // 4. Download as CSV
         function downloadCSV() {
             if (currentFilteredData.length === 0) return;
             const headers = ["Dataset", "Published year", "Age range", "Samples", "Modality", "Type", "Data link", "Reference"];
             const csvRows = [
                 headers.join(','), 
                 ...currentFilteredData.map(row => 
-                    headers.map(fieldName => `"${(row[fieldName] || '').toString().replace(/"/g, '""')}"`).join(',')
+                    headers.map(fieldName => {
+                        let val = row[fieldName] || '';
+                        if(fieldName === "Published year") val = Math.floor(parseFloat(val)) || val;
+                        return `"${String(val).replace(/"/g, '""')}"`;
+                    }).join(',')
                 )
             ];
             const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "NeuroDatasets_Export.csv";
+            link.download = "NeuroDatasets_Selected.csv";
             link.click();
         }
 
-        // 5. Live Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const filtered = datasets.filter(d => 
@@ -170,7 +171,6 @@
             renderTable(filtered);
         });
 
-        // Initialize
         loadData();
     </script>
 </body>
