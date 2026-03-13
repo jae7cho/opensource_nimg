@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open-Source Datasets Review</title>
+    <title>Open-Source Datasets Index</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         th { cursor: pointer; user-select: none; }
         th:hover { color: #2563eb !important; }
+        /* Style for the scrollbar to keep it clean */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-12">
@@ -17,62 +22,82 @@
     <div class="max-w-7xl mx-auto">
         <header class="mb-8">
             <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Open-Source Datasets Index</h1>
-            <p class="text-slate-500 mt-2">Table Companion for your Review Article</p>
-            <div id="count" class="text-sm font-medium text-blue-600 mt-4 bg-blue-50 inline-block px-3 py-1 rounded-full">
-                Loading datasets...
+            <p class="text-slate-500 mt-2 italic text-lg">Companion table for {Article name}.</p>
+            <div id="count" class="text-sm font-semibold text-blue-700 mt-4 bg-blue-50 border border-blue-100 inline-block px-4 py-1 rounded-full shadow-sm">
+                Initializing...
             </div>
         </header>
 
-        <div class="mb-6">
-            <input type="text" id="searchInput" placeholder="Search datasets, modalities, or years..." 
-                class="w-full p-4 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+            <div class="relative flex-1 w-full">
+                <input type="text" id="searchInput" placeholder="Search by name, year, modality, or keywords..." 
+                    class="w-full p-4 pl-5 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-lg">
+            </div>
+            
+            <button onclick="downloadCSV()" class="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-4 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 group-hover:text-blue-500">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export CSV
+            </button>
         </div>
 
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
-                            <th onclick="sortData('Dataset')" class="p-4 font-semibold text-slate-600">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-4 font-semibold text-slate-600">Year ↕</th>
-                            <th class="p-4 font-semibold text-slate-600">Age Range</th>
-                            <th onclick="sortData('Samples')" class="p-4 font-semibold text-slate-600">Samples ↕</th>
-                            <th class="p-4 font-semibold text-slate-600">Modality</th>
-                            <th class="p-4 font-semibold text-slate-600">Link</th>
-                            <th class="p-4 font-semibold text-slate-600">Reference</th>
+                            <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Dataset ↕</th>
+                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center">Year ↕</th>
+                            <th class="p-5 font-bold text-slate-700">Age Range</th>
+                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700">Samples ↕</th>
+                            <th class="p-5 font-bold text-slate-700">Modality</th>
+                            <th class="p-5 font-bold text-slate-700">Type</th>
+                            <th class="p-5 font-bold text-slate-700">Link</th>
+                            <th class="p-5 font-bold text-slate-700">Reference</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+                    <tbody id="tableBody" class="divide-y divide-slate-100">
+                        </tbody>
                 </table>
             </div>
         </div>
+
+        <footer class="mt-12 py-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+            <p>Interactive Index.</p>
+        </footer>
     </div>
 
     <script>
         let datasets = [];
+        let currentFilteredData = [];
         let sortDirection = 1;
 
+        // 1. Load the data
         async function loadData() {
             try {
-                const response = await fetch('./OpenSourceNeuroimagingDatasets.json');
+                // Ensure this filename matches your GitHub file exactly!
+                const response = await fetch('OpenSourceNeuroimagingDatasets.json');
                 datasets = await response.json();
+                currentFilteredData = datasets;
                 renderTable(datasets);
             } catch (err) {
                 console.error("Error loading JSON:", err);
-                document.getElementById('count').innerText = "Error loading data. Check filename casing!";
+                document.getElementById('count').innerText = "Database connection error.";
             }
         }
 
+        // 2. Sort the data
         function sortData(key) {
             sortDirection *= -1;
-            const sorted = [...datasets].sort((a, b) => {
+            const sorted = [...currentFilteredData].sort((a, b) => {
                 let valA = a[key] || '';
                 let valB = b[key] || '';
                 
-                // Clean up numbers for sorting (e.g., "41,520" -> 41520)
+                // Numeric cleanup for sorting (years and samples with commas)
                 if (key === 'Samples' || key === 'Published year') {
-                    valA = parseInt(valA.replace(/,/g, '')) || 0;
-                    valB = parseInt(valB.replace(/,/g, '')) || 0;
+                    valA = parseInt(String(valA).replace(/,/g, '')) || 0;
+                    valB = parseInt(String(valB).replace(/,/g, '')) || 0;
                 }
 
                 if (valA < valB) return -1 * sortDirection;
@@ -82,34 +107,61 @@
             renderTable(sorted);
         }
 
+        // 3. Render the table
         function renderTable(data) {
+            currentFilteredData = data;
             const body = document.getElementById('tableBody');
             const countDiv = document.getElementById('count');
-            countDiv.innerText = `Showing ${data.length} datasets`;
+            
+            countDiv.innerText = `Displaying ${data.length} Datasets Found`;
+
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="p-10 text-center text-slate-400">No datasets found matching your search criteria.</td></tr>';
+                return;
+            }
 
             body.innerHTML = data.map(d => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-bold text-blue-700">${d.Dataset || ''}</td>
-                    <td class="p-4 text-slate-500">${d['Published year'] || ''}</td>
-                    <td class="p-4 text-sm">${d['Age range'] || ''}</td>
-                    <td class="p-4 text-slate-600 font-medium">${d.Samples || ''}</td>
-                    <td class="p-4">
-                        <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] uppercase tracking-wider rounded-md font-bold border border-blue-100">
+                <tr class="hover:bg-blue-50/30 transition-colors group">
+                    <td class="p-5 font-bold text-blue-800">${d.Dataset || ''}</td>
+                    <td class="p-5 text-slate-500 text-center">${d['Published year'] || ''}</td>
+                    <td class="p-5 text-sm font-medium text-slate-600">${d['Age range'] || ''}</td>
+                    <td class="p-5 text-slate-800 font-semibold">${d.Samples || ''}</td>
+                    <td class="p-5">
+                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase tracking-tighter rounded font-bold shadow-sm">
                             ${d.Modality || ''}
                         </span>
                     </td>
-                    <td class="p-4 text-center">
-                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-lg hover:bg-blue-600 hover:text-white transition-all font-bold">
-                            Source ↗
+                    <td class="p-5 text-slate-800 font-semibold">${d.Type || ''}</td>
+                    <td class="p-5">
+                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-4 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-800 transition-all font-bold shadow-sm">
+                            Access ↗
                         </a>
                     </td>
-                    <td class="p-4 text-[12px] italic text-slate-400 max-w-xs truncate" title="${d.Reference || ''}">
+                    <td class="p-5 text-[11px] leading-relaxed italic text-slate-400 max-w-xs truncate group-hover:whitespace-normal group-hover:text-slate-600 transition-all" title="${d.Reference || ''}">
                         ${d.Reference || ''}
                     </td>
                 </tr>
             `).join('');
         }
 
+        // 4. Download as CSV
+        function downloadCSV() {
+            if (currentFilteredData.length === 0) return;
+            const headers = ["Dataset", "Published year", "Age range", "Samples", "Modality", "Type", "Data link", "Reference"];
+            const csvRows = [
+                headers.join(','), 
+                ...currentFilteredData.map(row => 
+                    headers.map(fieldName => `"${(row[fieldName] || '').toString().replace(/"/g, '""')}"`).join(',')
+                )
+            ];
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "NeuroDatasets_Export.csv";
+            link.click();
+        }
+
+        // 5. Live Search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const filtered = datasets.filter(d => 
@@ -118,6 +170,7 @@
             renderTable(filtered);
         });
 
+        // Initialize
         loadData();
     </script>
 </body>
