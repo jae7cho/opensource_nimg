@@ -10,10 +10,11 @@
         body { font-family: 'Inter', sans-serif; }
         th { cursor: pointer; user-select: none; transition: color 0.2s; }
         th:hover { color: #2563eb !important; }
-        ::-webkit-scrollbar { width: 8px; height: 10px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Custom Scrollbar for better visibility */
+        .overflow-x-auto::-webkit-scrollbar { height: 12px; }
+        .overflow-x-auto::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+        .overflow-x-auto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f8fafc; }
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-12">
@@ -42,16 +43,16 @@
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[1300px]">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                <table class="w-full text-left border-collapse min-w-[1500px]">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-sm">
                         <tr>
-                            <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 whitespace-nowrap w-[800px]">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap w-[200px]">Year ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap w-[800px]">Age Range</th>
-                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap w-[800px]">Samples ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap w-[800px]">Modality</th>
-                            <th onclick="sortData('Type')" class="p-5 font-bold text-slate-700 whitespace-nowrap w-[800px]">Type ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap w-[200px]">Link</th>
+                            <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 min-w-[250px]">Dataset ↕</th>
+                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap">Year ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Age Range</th>
+                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Samples ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Modality</th>
+                            <th onclick="sortData('Type')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Type ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Link</th>
                             <th class="p-5 font-bold text-slate-700">Reference</th>
                         </tr>
                     </thead>
@@ -60,6 +61,7 @@
                 </table>
             </div>
         </div>
+        <p class="text-slate-400 text-xs mt-3 text-right">← Scroll horizontally to view full table →</p>
     </div>
 
     <script>
@@ -102,18 +104,18 @@
             countDiv.innerText = `Displaying ${data.length} Datasets`;
 
             body.innerHTML = data.map(d => {
-                // Year decimal fix: remove anything after a dot if it exists
-                let rawYear = String(d['Published year'] || '');
-                let displayYear = rawYear.split('.')[0]; 
+                // FORCE INTEGER for year: handles "2015.0" or "2015"
+                let rawYear = d['Published year'];
+                let displayYear = rawYear ? Math.trunc(parseFloat(rawYear)) : '';
 
                 return `
                 <tr class="hover:bg-blue-50/40 transition-colors group">
-                    <td class="p-5 font-bold text-blue-900 max-w-[200px] break-words">${d.Dataset || ''}</td>
+                    <td class="p-5 font-bold text-blue-900 min-w-[250px] leading-snug">${d.Dataset || ''}</td>
                     <td class="p-5 text-slate-500 text-center font-medium whitespace-nowrap">${displayYear}</td>
                     <td class="p-5 text-slate-600 font-medium whitespace-nowrap">${d['Age range'] || ''}</td>
                     <td class="p-5 text-slate-800 font-bold whitespace-nowrap">${d.Samples || ''}</td>
-                    <td class="p-5">
-                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase rounded font-bold shadow-sm whitespace-nowrap">
+                    <td class="p-5 whitespace-nowrap">
+                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase rounded font-bold shadow-sm">
                             ${d.Modality || ''}
                         </span>
                     </td>
@@ -123,7 +125,7 @@
                             Data Link ↗
                         </a>
                     </td>
-                    <td class="p-5 text-[11px] italic text-slate-400 leading-snug group-hover:text-slate-600 transition-all">
+                    <td class="p-5 text-[11px] italic text-slate-400 min-w-[400px] group-hover:text-slate-600 transition-all">
                         ${d.Reference || ''}
                     </td>
                 </tr>
@@ -138,7 +140,7 @@
                 ...currentFilteredData.map(row => 
                     headers.map(fieldName => {
                         let val = row[fieldName] || '';
-                        if(fieldName === "Published year") val = String(val).split('.')[0];
+                        if(fieldName === "Published year") val = val ? Math.trunc(parseFloat(val)) : '';
                         return `"${String(val).replace(/"/g, '""')}"`;
                     }).join(',')
                 )
