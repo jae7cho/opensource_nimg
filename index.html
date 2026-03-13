@@ -54,7 +54,7 @@
 
         async function loadData() {
             try {
-                const response = await fetch('OpenSourceNeuroimagingDatasets.json');
+                const response = await fetch('./OpenSourceNeuroimagingDatasets.json');
                 datasets = await response.json();
                 renderTable(datasets);
             } catch (err) {
