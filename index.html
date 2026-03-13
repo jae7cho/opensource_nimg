@@ -33,8 +33,8 @@
                             <th class="p-4 font-semibold text-slate-600">Age Range</th>
                             <th class="p-4 font-semibold text-slate-600">Samples</th>
                             <th class="p-4 font-semibold text-slate-600">Modality</th>
-                            <th class="p-4 font-semibold text-slate-600">Reference</th>
                             <th class="p-4 font-semibold text-slate-600">Link</th>
+                            <th class="p-4 font-semibold text-slate-600">Reference</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100">
@@ -75,14 +75,12 @@
                             ${d.modality || ''}
                         </span>
                     </td>
-                    
-                    <td class="p-4 text-sm italic text-slate-400">${d.reference || ''}</td>
-                    
                     <td class="p-4">
                         <a href="${d['data link'] || '#'}" target="_blank" class="text-blue-500 hover:text-blue-800">
-                            View ↗
+                            Data Link ↗
                         </a>
                     </td>
+                    <td class="p-4 text-sm italic text-slate-400">${d.reference || ''}</td>
                 </tr>
             `).join('');
         }
