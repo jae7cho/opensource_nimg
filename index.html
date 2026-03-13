@@ -71,22 +71,22 @@
 
             body.innerHTML = data.map(d => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-bold text-blue-700">${d.dataset || ''}</td>
-                    <td class="p-4 text-slate-500">${d['published year'] || ''}</td>
-                    <td class="p-4">${d['age range'] || ''}</td>
-                    <td class="p-4 text-slate-600 font-medium">${d.samples || ''}</td>
+                    <td class="p-4 font-bold text-blue-700">${d.Dataset || ''}</td>
+                    <td class="p-4 text-slate-500">${d['Published year'] || ''}</td>
+                    <td class="p-4">${d['Age range'] || ''}</td>
+                    <td class="p-4 text-slate-600 font-medium">${d.Samples || ''}</td>
                     <td class="p-4">
                         <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] uppercase tracking-wider rounded-md font-bold border border-blue-100">
-                            ${d.modality || ''}
+                            ${d.Modality || ''}
                         </span>
                     </td>
                     <td class="p-4">
-                        <a href="${d['data link'] || '#'}" target="_blank" class="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all font-medium">
+                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-lg hover:bg-blue-600 hover:text-white transition-all font-medium">
                             Source ↗
                         </a>
                     </td>
                     <td class="p-4 text-sm italic text-slate-400 max-w-xs truncate" title="${d.reference || ''}">
-                        ${d.reference || ''}
+                        ${d.Reference || ''}
                     </td>
                 </tr>
             `).join('');
