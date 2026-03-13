@@ -13,7 +13,9 @@
         table { table-layout: fixed; width: 100%; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 p-4 md:p-6"> <div class="w-full mx-auto px-2 md:px-4"> 
+<body class="bg-slate-50 text-slate-900 p-4 md:p-6">
+
+    <div class="w-full mx-auto px-2 md:px-4"> 
         <header class="mb-8">
             <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Open-Source Datasets Index</h1>
             <p class="text-slate-500 mt-2 italic text-lg">Companion table for {Article name}.</p>
@@ -99,6 +101,12 @@
             body.innerHTML = data.map(d => {
                 let rawYear = d['Published year'];
                 let displayYear = rawYear ? Math.trunc(parseFloat(rawYear)) : '';
+                
+                // Logic to hide link button if URL is empty
+                const linkUrl = (d['Data link'] || '').trim();
+                const linkButton = linkUrl !== "" 
+                    ? `<a href="${linkUrl}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-[10px] rounded hover:bg-blue-800 transition-all font-bold whitespace-nowrap">Link ↗</a>`
+                    : `<span class="text-slate-300 text-[10px] font-bold uppercase tracking-widest">N/A</span>`;
 
                 return `
                 <tr class="hover:bg-blue-50/40 transition-colors group">
@@ -112,9 +120,7 @@
                         </span>
                     </td>
                     <td class="p-4 text-center">
-                        <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-[10px] rounded hover:bg-blue-800 transition-all font-bold whitespace-nowrap">
-                            Link ↗
-                        </a>
+                        ${linkButton}
                     </td>
                     <td class="p-4 text-[11px] italic text-slate-400 relative">
                         <div class="truncate w-full group-hover:whitespace-normal group-hover:text-slate-700 transition-all duration-200">
