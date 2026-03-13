@@ -10,14 +10,10 @@
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         th { cursor: pointer; user-select: none; transition: color 0.2s; }
         th:hover { color: #2563eb !important; }
-        
-        /* Clean up the table layout */
         table { table-layout: fixed; width: 100%; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 p-4 md:p-12">
-
-    <div class="max-w-7xl mx-auto">
+<body class="bg-slate-50 text-slate-900 p-4 md:p-6"> <div class="w-full mx-auto px-2 md:px-4"> 
         <header class="mb-8">
             <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Open-Source Datasets Index</h1>
             <p class="text-slate-500 mt-2 italic text-lg">Companion table for {Article name}.</p>
@@ -37,16 +33,17 @@
         </div>
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
-            <div class="overflow-hidden"> <table class="text-left border-collapse">
+            <div class="overflow-hidden"> 
+                <table class="text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider">
                         <tr>
-                            <th onclick="sortData('Dataset')" class="p-4 font-bold text-slate-700 w-[20%]">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-4 font-bold text-slate-700 text-center w-[8%]">Year ↕</th>
-                            <th class="p-4 font-bold text-slate-700 w-[10%]">Age</th>
-                            <th onclick="sortData('Samples')" class="p-4 font-bold text-slate-700 w-[10%]">Samples ↕</th>
+                            <th onclick="sortData('Dataset')" class="p-4 font-bold text-slate-700 w-[18%]">Dataset ↕</th>
+                            <th onclick="sortData('Published year')" class="p-4 font-bold text-slate-700 text-center w-[7%]">Year ↕</th>
+                            <th class="p-4 font-bold text-slate-700 w-[8%]">Age</th>
+                            <th onclick="sortData('Samples')" class="p-4 font-bold text-slate-700 w-[9%]">Samples ↕</th>
                             <th class="p-4 font-bold text-slate-700 w-[12%]">Modality</th>
-                            <th class="p-4 font-bold text-slate-700 w-[10%] text-center">Link</th>
-                            <th class="p-4 font-bold text-slate-700 w-[30%]">Reference</th>
+                            <th class="p-4 font-bold text-slate-700 w-[8%] text-center">Link</th>
+                            <th class="p-4 font-bold text-slate-700 w-[38%]">Reference</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
@@ -54,6 +51,10 @@
                 </table>
             </div>
         </div>
+        
+        <footer class="mt-12 py-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+            <p>Interactive Index developed for academic review publication purposes.</p>
+        </footer>
     </div>
 
     <script>
@@ -96,7 +97,6 @@
             countDiv.innerText = `Displaying ${data.length} Datasets`;
 
             body.innerHTML = data.map(d => {
-                // Integer fix for Year
                 let rawYear = d['Published year'];
                 let displayYear = rawYear ? Math.trunc(parseFloat(rawYear)) : '';
 
