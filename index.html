@@ -48,13 +48,13 @@
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
                             <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center">Year ↕</th>
-                            <th class="p-5 font-bold text-slate-700">Age Range</th>
-                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700">Samples ↕</th>
-                            <th class="p-5 font-bold text-slate-700">Modality</th>
-                            <th class="p-5 font-bold text-slate-700">Type</th>
-                            <th class="p-5 font-bold text-slate-700">Link</th>
-                            <th class="p-5 font-bold text-slate-700">Reference</th>
+                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap">Year ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Age Range</th>
+                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Samples ↕</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Modality</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Type</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Link</th>
+                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Reference</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100">
@@ -134,7 +134,7 @@
                     <td class="p-5 text-slate-800 font-semibold">${d.Type || ''}</td>
                     <td class="p-5">
                         <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-4 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-800 transition-all font-bold shadow-sm">
-                            Access ↗
+                            Data Link ↗
                         </a>
                     </td>
                     <td class="p-5 text-[11px] leading-relaxed italic text-slate-400 max-w-xs truncate group-hover:whitespace-normal group-hover:text-slate-600 transition-all" title="${d.Reference || ''}">
