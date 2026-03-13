@@ -10,11 +10,11 @@
         body { font-family: 'Inter', sans-serif; }
         th { cursor: pointer; user-select: none; transition: color 0.2s; }
         th:hover { color: #2563eb !important; }
-        /* Custom Scrollbar for better visibility */
-        .overflow-x-auto::-webkit-scrollbar { height: 12px; }
-        .overflow-x-auto::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
-        .overflow-x-auto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 3px solid #f8fafc; }
-        .overflow-x-auto::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* This makes the horizontal scrollbar very obvious */
+        .custom-scroll::-webkit-scrollbar { height: 14px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; border: 3px solid #f1f5f9; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 p-4 md:p-12">
@@ -30,30 +30,27 @@
 
         <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
             <div class="relative flex-1 w-full">
-                <input type="text" id="searchInput" placeholder="Search by name, year, modality, or keywords..." 
+                <input type="text" id="searchInput" placeholder="Search datasets..." 
                     class="w-full p-4 pl-5 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-lg">
             </div>
             <button onclick="downloadCSV()" class="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-4 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600 transition-all group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 group-hover:text-blue-500">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
                 Export CSV
             </button>
         </div>
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-md overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[1500px]">
+            <div class="overflow-x-auto custom-scroll">
+                <table style="width: 2000px; table-layout: fixed;" class="text-left border-collapse">
                     <thead class="bg-slate-50 border-b border-slate-200 text-sm">
                         <tr>
-                            <th onclick="sortData('Dataset')" class="p-5 font-bold text-slate-700 min-w-[250px]">Dataset ↕</th>
-                            <th onclick="sortData('Published year')" class="p-5 font-bold text-slate-700 text-center whitespace-nowrap">Year ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Age Range</th>
-                            <th onclick="sortData('Samples')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Samples ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Modality</th>
-                            <th onclick="sortData('Type')" class="p-5 font-bold text-slate-700 whitespace-nowrap">Type ↕</th>
-                            <th class="p-5 font-bold text-slate-700 whitespace-nowrap">Link</th>
-                            <th class="p-5 font-bold text-slate-700">Reference</th>
+                            <th onclick="sortData('Dataset')" style="width: 350px;" class="p-5 font-bold text-slate-700">Dataset ↕</th>
+                            <th onclick="sortData('Published year')" style="width: 120px;" class="p-5 font-bold text-slate-700 text-center">Year ↕</th>
+                            <th style="width: 150px;" class="p-5 font-bold text-slate-700">Age Range</th>
+                            <th onclick="sortData('Samples')" style="width: 150px;" class="p-5 font-bold text-slate-700">Samples ↕</th>
+                            <th style="width: 200px;" class="p-5 font-bold text-slate-700">Modality</th>
+                            <th style="width: 150px;" class="p-5 font-bold text-slate-700">Type</th>
+                            <th style="width: 180px;" class="p-5 font-bold text-slate-700">Link</th>
+                            <th style="width: 700px;" class="p-5 font-bold text-slate-700">Reference</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
@@ -61,7 +58,7 @@
                 </table>
             </div>
         </div>
-        <p class="text-slate-400 text-xs mt-3 text-right">← Scroll horizontally to view full table →</p>
+        <p class="text-blue-600 font-bold text-sm mt-4 animate-pulse text-center">← Scroll right to see full References and Data Links →</p>
     </div>
 
     <script>
@@ -104,28 +101,28 @@
             countDiv.innerText = `Displaying ${data.length} Datasets`;
 
             body.innerHTML = data.map(d => {
-                // FORCE INTEGER for year: handles "2015.0" or "2015"
+                // Point 2: Solid Integer Fix
                 let rawYear = d['Published year'];
                 let displayYear = rawYear ? Math.trunc(parseFloat(rawYear)) : '';
 
                 return `
                 <tr class="hover:bg-blue-50/40 transition-colors group">
-                    <td class="p-5 font-bold text-blue-900 min-w-[250px] leading-snug">${d.Dataset || ''}</td>
-                    <td class="p-5 text-slate-500 text-center font-medium whitespace-nowrap">${displayYear}</td>
-                    <td class="p-5 text-slate-600 font-medium whitespace-nowrap">${d['Age range'] || ''}</td>
-                    <td class="p-5 text-slate-800 font-bold whitespace-nowrap">${d.Samples || ''}</td>
-                    <td class="p-5 whitespace-nowrap">
-                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase rounded font-bold shadow-sm">
+                    <td class="p-5 font-bold text-blue-900 break-words">${d.Dataset || ''}</td>
+                    <td class="p-5 text-slate-500 text-center font-medium">${displayYear}</td>
+                    <td class="p-5 text-slate-600 font-medium">${d['Age range'] || ''}</td>
+                    <td class="p-5 text-slate-800 font-bold">${d.Samples || ''}</td>
+                    <td class="p-5">
+                        <span class="px-2 py-1 bg-white border border-slate-200 text-slate-600 text-[10px] uppercase rounded font-bold shadow-sm whitespace-nowrap">
                             ${d.Modality || ''}
                         </span>
                     </td>
-                    <td class="p-5 font-medium text-slate-700 whitespace-nowrap">${d.Type || ''}</td>
+                    <td class="p-5 font-medium text-slate-700">${d.Type || ''}</td>
                     <td class="p-5">
                         <a href="${d['Data link'] || '#'}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-[11px] rounded-lg hover:bg-blue-800 transition-all font-bold shadow-sm whitespace-nowrap">
                             Data Link ↗
                         </a>
                     </td>
-                    <td class="p-5 text-[11px] italic text-slate-400 min-w-[400px] group-hover:text-slate-600 transition-all">
+                    <td class="p-5 text-[11px] italic text-slate-500 leading-relaxed">
                         ${d.Reference || ''}
                     </td>
                 </tr>
